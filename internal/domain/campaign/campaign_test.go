@@ -1,14 +1,24 @@
 package campaign
 
-import "testing"
+import (
+	"testing"
+	"time"
 
-func TestNewCampaign(t *testing.T) {
-	name := "Campaign 1"
-	content := "Content 1"
-	contacts := []Contact{
-		{Email: "diego.collares@gmail.com"},
-		{Email: "mariane.collares@gmail.com"},
-	}
+	"github.com/stretchr/testify/assert"
+)
+
+const (
+	name    = "Campaign 1"
+	content = "Content 1"
+)
+
+var contacts = []Contact{
+	{Email: "diego.collares@gmail.com"},
+	{Email: "mariane.collares@gmail.com"},
+}
+
+func Test_NewCampaign(t *testing.T) {
+	assert := assert.New(t)
 
 	campaign := NewCampaign(
 		name,
@@ -16,20 +26,35 @@ func TestNewCampaign(t *testing.T) {
 		contacts,
 	)
 
-	if campaign.ID != "1" {
-		t.Errorf("Expected ID to be 1, but got %s", campaign.ID)
-	}
+	println(campaign.ID)
+	assert.Equal(campaign.Name, name)
+	assert.Equal(campaign.Content, content)
+	assert.Equal(len(campaign.Contacts), len(contacts))
 
-	if campaign.Name != name {
-		t.Errorf("Expected Name to be %s, but got %s", name, campaign.Name)
-	}
+}
 
-	if campaign.Content != content {
-		t.Errorf("Expected Content to be %s, but got %s", content, campaign.Content)
-	}
+func Test_NewCampaign_Id_NotNil(t *testing.T) {
+	assert := assert.New(t)
 
-	if len(campaign.Contacts) != 2 {
-		t.Errorf("Expected 2 contacts, but got %d", len(campaign.Contacts))
-	}
+	campaign := NewCampaign(
+		name,
+		content,
+		contacts,
+	)
 
+	assert.NotNil(campaign.ID)
+}
+
+func Test_NewCampaign_CreatedAt_MostBeNow(t *testing.T) {
+	assert := assert.New(t)
+
+	now := time.Now().Add(-time.Minute)
+
+	campaign := NewCampaign(
+		name,
+		content,
+		contacts,
+	)
+
+	assert.Greater(campaign.CreatedAt, now)
 }
